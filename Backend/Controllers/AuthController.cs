@@ -41,25 +41,33 @@ namespace LeaveManagementSystem.API.Controllers
         [HttpPost("setup")]
         public async Task<IActionResult> SetupAdmin()
         {
-            var count = await _db.Employees.CountDocumentsAsync(Builders<Employee>.Filter.Empty);
-            if (count > 0) return BadRequest("Admin already exists. Setup cannot be run.");
-
-            var admin = new Employee
+            try
             {
-                Name = "Admin User",
-                Email = "admin@example.com",
-                Role = "Admin",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123")
-            };
+                var count = await _db.Employees.CountDocumentsAsync(Builders<Employee>.Filter.Empty);
+                if (count > 0) return BadRequest("Admin already exists. Setup cannot be run.");
 
-            await _db.Employees.InsertOneAsync(admin);
+                var admin = new Employee
+                {
+                    Name = "Admin User",
+                    Email = "admin@example.com",
+                    Role = "Admin",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123")
+                };
 
-            // Initialize Leave Balance for admin
-            var currentMonth = DateTime.UtcNow.Month;
-            var currentYear = DateTime.UtcNow.Year;
-            await _db.LeaveBalances.InsertOneAsync(new LeaveBalance { EmployeeId = admin.Id!, Month = currentMonth, Year = currentYear });
+                await _db.Employees.InsertOneAsync(admin);
 
-            return Ok(new { message = "Admin setup successful." });
+                // Initialize Leave Balance for admin
+                var currentMonth = DateTime.UtcNow.Month;
+                var currentYear = DateTime.UtcNow.Year;
+                await _db.LeaveBalances.InsertOneAsync(new LeaveBalance { EmployeeId = admin.Id!, Month = currentMonth, Year = currentYear });
+
+                return Ok(new { message = "Admin setup successful." });
+            }
+            catch (Exception ex)
+            {
+                // Return the actual error to help us debug the production environment
+                return StatusCode(500, new { message = "Seeding failed", detail = ex.Message, stack = ex.StackTrace });
+            }
         }
 
         private string GenerateJwtToken(Employee user)
