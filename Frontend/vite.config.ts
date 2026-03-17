@@ -4,7 +4,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/cli-leave-application-portal/',
   plugins: [
     react(),
     tailwindcss()
@@ -15,7 +14,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/cli-leave-application-portal/api': {
+      '/api': {
         target: 'http://localhost:5242',
         changeOrigin: true,
       }

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/cli-leave-application-portal/api', // Maps to the backend API via relative path or proxy
+  baseURL: '/api', // Maps to the backend API natively
 });
 
 api.interceptors.request.use((config) => {

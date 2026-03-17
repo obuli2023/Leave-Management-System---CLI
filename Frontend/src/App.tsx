@@ -17,7 +17,7 @@ const App = () => {
   const { role } = useAuth();
 
   return (
-    <Router basename="/cli-leave-application-portal">
+    <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
 
